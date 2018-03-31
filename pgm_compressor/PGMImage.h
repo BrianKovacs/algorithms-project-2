@@ -27,10 +27,10 @@ public:
     int width;
     int height;
     int max;
-    int* arr;
+    int* values;
     
     PGMImage() {width=0; height=0; max=0;};
-    int getSize() {return width*height;}
+    size_t getSize() {return width*height;}
     
     bool loadASCII(const char* file);
     bool saveASCII(const char* file);
@@ -70,7 +70,7 @@ bool PGMImage::loadASCII(const char* file)
             cout << "Width and Height " << line << endl;
             iss >> width >> height;
             size = width*height;
-            arr = new int[size];
+            values = new int[size];
             
         } else if (n == 2) {
             // Max Value
@@ -82,7 +82,7 @@ bool PGMImage::loadASCII(const char* file)
 //            cout << '.';
             int val = 0;
             while (iss >> val && i < size) {
-                arr[i] = val;
+                values[i] = val;
                 ++i;
             }
         }
@@ -106,7 +106,7 @@ bool PGMImage::saveASCII(const char *file)
     outFile << max << endl;
     
     for (int i=0; i < getSize(); ++i) {
-        outFile << arr[i] << "  ";
+        outFile << values[i] << "  ";
         if ((i+1)%12==0)
             outFile << endl;
     }
@@ -120,8 +120,32 @@ bool PGMImage::loadBinary(const char *file)
     return true;
 }
 
-bool PGMImage::saveBinary(<#const char *file#>)
+bool PGMImage::saveBinary(const char *file)
 {
+//    FILE * pFile;
+//    char buffer[] = { 65 , 66 , 67 };
+//    pFile = fopen ("myfile.bin", "wb");
+//    fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
+//    fclose (pFile);
+//    return 0;
+    
+    FILE * pFile;
+    pFile = fopen (file, "wb");
+    
+    char w1 = width%256;
+    char w2 = (width-w1)/256;
+    char h1 = height%256;
+    char h2 = (height-w1)/256;
+    char bufferHeader[5] = { w1, w2, h1, h2 , static_cast<char>(max) };
+    fwrite (bufferHeader , sizeof(char), sizeof(bufferHeader), pFile);
+    
+    char bufferValues[getSize()];
+    for (int i=0; i < getSize(); ++i) {
+        bufferValues[i] = values[i];
+    }
+    fwrite (bufferValues , sizeof(char), sizeof(bufferValues), pFile);
+    
+    fclose (pFile);
     return true;
 }
 
