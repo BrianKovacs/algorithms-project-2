@@ -46,11 +46,26 @@ int main(int argc, const char * argv[]) {
 }
 
 void option1(const char* file) {
+//    cout << file << endl;
+//    PGMImage i;
+//    i.loadASCII(file);
+//    string newFile = "testASCII.pgm";
+//    i.saveASCII(newFile.c_str());
+    
     cout << file << endl;
+    string newFile;
+    string str(file);
+    size_t found = str.find_last_of(".pgm");
+    if (found != string::npos) {
+        newFile = str.substr(0,found-3) + "_b.pgm";
+    } else {
+        newFile = str + "_b.pgm";
+    }
+    cout << newFile << endl;
+    
     PGMImage i;
     i.loadASCII(file);
-    string newFile = "testASCII.pgm";
-    i.saveASCII(newFile.c_str());
+    i.saveBinary(newFile.c_str());
 }
 
 void option2(const char* file) {
