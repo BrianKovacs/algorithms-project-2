@@ -427,6 +427,96 @@ void PGMImage::loadSVD(const char *file)
     
     cout << "Width: " << width << "\nHeight: " << height << "\nMax: " << max << "\nRank: " << k << endl;
     
+    
+    half* uBuffer = new half[k*height];
+    fread(uBuffer, sizeof(half), k*height, binFile);
+    
+    half* sBuffer = new half[k];
+    fread(sBuffer, sizeof(half), k, binFile);
+    
+    half* vBuffer = new half[k*width];
+    fread(vBuffer, sizeof(half), k*width, binFile);
+    
+    /*
+    cout << "U Vector:";
+    for (int i=0; i<k*height; ++i) {
+        cout << "  " << uBuffer[i] << endl;
+    }
+    cout << "\n\nU Vector:";
+    for (int i=0; i<k; ++i) {
+        cout << "  " << sBuffer[i] << endl;
+    }
+    cout << "\n\nU Vector:";
+    for (int i=0; i<k*width; ++i) {
+        cout << "  " << vBuffer[i] << endl;
+    }
+     */
+    
+    double *U, *S, *V;
+    U = new double[height*width] (); // all elements 0
+    S = new double[width*width] (); // all elements 0
+    V = new double[width*width] (); // all elements 0
+    
+    for (int i=0; i<k; ++i) {
+        for (int j=0; j<height; ++j) {
+            U[j*width+i] = uBuffer[i*height+j];
+        }
+    }
+    
+    for (int i=0; i<k; ++i) {
+        S[i*width+i] = sBuffer[i];
+    }
+    
+    for (int i=0; i<k; ++i) {
+        for (int j=0; j<width; ++j) {
+            V[i*width+j] = vBuffer[i*width+j];
+        }
+    }
+
+//    U [ height * width ]
+//    S [ width * width ]
+//    V [ width * width ]
+    
+    cout << "U Matrix:\n";
+    for (int i=0; i<height; ++i) {
+        for (int j=0; j<width; ++j) {
+            cout << "\t" << U[i*width+j];
+        }
+        cout << endl;
+    }
+    
+//    for (int i=0; i<height*width; ++i) {
+//        cout << U[i] << ' ';
+//    }
+//    cout << endl;
+
+    cout << "\nS Matrix:\n";
+    for (int i=0; i<width; ++i) {
+        for (int j=0; j<width; ++j) {
+            cout << "\t" << S[i*width+j];
+        }
+        cout << endl;
+    }
+    
+//    for (int i=0; i<width*width; ++i) {
+//        cout << S[i] << ' ';
+//    }
+//    cout << endl;
+    
+    cout << "\nV' Matrix:\n";
+    for (int i=0; i<width; ++i) {
+        for (int j=0; j<width; ++j) {
+            cout << "\t" << V[i*width+j];
+        }
+        cout << endl;
+    }
+    
+//    for (int i=0; i<width*width; ++i) {
+//        cout << V[i] << ' ';
+//    }
+//    cout << endl;
+    
+    
     /*
     int headerBufferSize = 5;
     unsigned char * headerBuffer = new unsigned char[headerBufferSize];
