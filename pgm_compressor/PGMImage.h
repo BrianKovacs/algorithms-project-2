@@ -43,6 +43,7 @@ public:
     bool loadBinary(const char* file);
     bool saveBinary(const char* file);
     static void saveSVD(const string headerName, const string svdName, const string outFileName, int rank);
+    void loadSVD(const char* file);
     void exportMatrix(const string file);
 };
 
@@ -396,6 +397,72 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
     header.close();
     svd.close();
     return;
+}
+
+void PGMImage::loadSVD(const char *file)
+{
+    FILE* binFile = fopen(file, "rb" );
+    if (!binFile) {
+        printf("Error: could not open file %s\n", file);
+        return;
+    }
+    
+    // Read the width, height, maxValue, and rank from the header buffer
+    unsigned char * headerBuffer = new unsigned char[6];
+    fread(headerBuffer, sizeof(char), 6, binFile);
+    
+    // lower half of width
+    width = static_cast<int>(headerBuffer[0]);
+    // upper half of width
+    width += 256*static_cast<int>(headerBuffer[1]);
+    // lower half of height
+    height = static_cast<int>(headerBuffer[2]);
+    // upper half of height
+    height += 256*static_cast<int>(headerBuffer[3]);
+    values = new int[getSize()];
+    // max value
+    max = static_cast<int>(headerBuffer[4]);
+    // Rank
+    int k = static_cast<int>(headerBuffer[5]);
+    
+    cout << "Width: " << width << "\nHeight: " << height << "\nMax: " << max << "\nRank: " << k << endl;
+    
+    /*
+    int headerBufferSize = 5;
+    unsigned char * headerBuffer = new unsigned char[headerBufferSize];
+    int n = 0;
+    
+    for (size_t bytesRead = fread(headerBuffer, sizeof(char), headerBufferSize, binFile); bytesRead > 0; bytesRead = fread(headerBuffer, sizeof(char), headerBufferSize, binFile)) {
+        
+        cout << "Bytes read: " << bytesRead << endl;
+        for (int i=0; i < bytesRead; ++i) {
+            //            cout << static_cast<int>(buffer[i]) << "  ";
+            
+            if (n == 0) {
+                // lower half of width
+                width = static_cast<int>(headerBuffer[i]);
+            } else if (n == 1) {
+                // upper half of width
+                width += 256*static_cast<int>(headerBuffer[i]);
+            } else if (n == 2) {
+                // lower half of height
+                height = static_cast<int>(headerBuffer[i]);
+            } else if (n == 3) {
+                // upper half of height
+                height += 256*static_cast<int>(headerBuffer[i]);
+                values = new int[getSize()];
+            } else if (n == 4) {
+                // max value
+                max = static_cast<int>(headerBuffer[i]);
+            }
+            ++n;
+        }
+    }
+    cout << endl;
+     */
+    
+    // Done and close.
+    fclose(binFile);
 }
 
 void PGMImage::exportMatrix(const string fileName)
