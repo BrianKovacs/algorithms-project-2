@@ -243,6 +243,8 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
     half *U, *S, *V;
     
     if (w > h) {
+        cout << "ERROR HERE!!!";
+        return;
         U = new half[h*h];
         S = new half[h*h];
         V = new half[w*h];
@@ -510,6 +512,51 @@ void PGMImage::loadSVD(const char *file)
         }
         cout << endl;
     }
+    
+    //    U [ height * width ]
+    //    S [ width * width ]
+    //    V [ width * width ]
+    
+    // B [ height * width ] = US;
+    double * B = new double[height*width] ();
+    
+    for (int bR=0; bR<height; ++bR) {
+        for (int bC=0; bC<width; ++bC) {
+            
+            for (int uC=0; uC < width; ++uC) {
+                B[bR*width+bC] += U[bR*width+uC] * S[uC*width+bC];
+            }
+        }
+    }
+    
+    cout << "\nB Matrix:\n";
+    for (int i=0; i<height; ++i) {
+        for (int j=0; j<width; ++j) {
+            cout << "\t" << B[i*width+j];
+        }
+        cout << endl;
+    }
+    
+    // X [ height * width ] = BV;
+    double * X = new double[height*width] ();
+    
+    for (int bR=0; bR<height; ++bR) {
+        for (int bC=0; bC<width; ++bC) {
+            
+            for (int uC=0; uC < width; ++uC) {
+                X[bR*width+bC] += B[bR*width+uC] * V[uC*width+bC];
+            }
+        }
+    }
+    
+    cout << "\nX Matrix:\n";
+    for (int i=0; i<height; ++i) {
+        for (int j=0; j<width; ++j) {
+            cout << "\t" << X[i*width+j];
+        }
+        cout << endl;
+    }
+    
     
 //    for (int i=0; i<width*width; ++i) {
 //        cout << V[i] << ' ';
