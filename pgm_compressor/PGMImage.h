@@ -44,7 +44,7 @@ public:
     bool loadBinary(const char* file);
     bool saveBinary(const char* file);
     static void saveSVD(const string headerName, const string svdName, const string outFileName, int rank);
-    void loadSVD(const char* file);
+    int loadSVD(const char* file);
     void exportMatrix(const string file);
 };
 
@@ -402,12 +402,12 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
     return;
 }
 
-void PGMImage::loadSVD(const char *file)
+int PGMImage::loadSVD(const char *file)
 {
     FILE* binFile = fopen(file, "rb" );
     if (!binFile) {
         printf("Error: could not open file %s\n", file);
-        return;
+        return -1;
     }
     
     // Read the width, height, maxValue, and rank from the header buffer
@@ -604,6 +604,7 @@ void PGMImage::loadSVD(const char *file)
     
     // Done and close.
     fclose(binFile);
+    return k;
 }
 
 void PGMImage::exportMatrix(const string fileName)
@@ -614,14 +615,21 @@ void PGMImage::exportMatrix(const string fileName)
     headerFile.close();
     
     ofstream aFile;
-    aFile.open(fileName+"_A.txt");
+    aFile.open(fileName+"_matlab.m");
+    
+    aFile << "A = [";
     
     for (int i=0; i<height; ++i) {
         for (int j=0; j<width; ++j) {
-            aFile << values[width*i+j] << ' ';
+            aFile << ' ' << values[width*i+j];
         }
-        aFile << endl;
+        aFile << ';';
     }
+    
+    aFile << ']' << endl;;
+    aFile << "[U,S,V] = svd(A,'econ')" << endl;
+    aFile << "W = transpose(V)" << endl;
+    aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii')" << endl;
     
     aFile.close();
 }

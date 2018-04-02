@@ -19,6 +19,20 @@ void exportMatrix(const char* file);
 
 int main(int argc, const char * argv[])
 {
+    
+//    ifstream file;
+//    file.open("myFile.txt");
+//    string line;
+//    getline(file, line);
+//    cout << line << endl;
+//    istringstream iss(line);
+//    half num;
+//    iss >> num;
+//    cout << "Number: " << num << endl;
+//    return 0;
+    
+    
+    
     if (argc >= 3 && strncmp (argv[1], "1", 2) == 0) {
         cout << "Option 1...\n";
         option1(argv[2]);
@@ -109,7 +123,7 @@ void option4(const char* file)
     string str(file);
     size_t found = str.find("_b.pgm.SVD");
     if (found != string::npos) {
-        newFile = str.substr(0,found) + "_k.pgm";
+        newFile = str.substr(0,found) + "_";
     } else {
         cout << "Error: The file name sould end with \"_b.pgm.SVD\"\n";
         return;
@@ -117,7 +131,12 @@ void option4(const char* file)
     cout << newFile << endl;
     
     PGMImage i;
-    i.loadSVD(file);
+    int rank = i.loadSVD(file);
+    
+    if (rank < 0)
+        return;
+    
+    newFile += to_string(rank) + ".pgm";
     i.saveASCII(newFile.c_str());
 }
 
