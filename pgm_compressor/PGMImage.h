@@ -15,6 +15,7 @@
 #include <fstream>
 #include <cstdio>
 #include <algorithm>
+#include <math.h>
 #include "half.hpp"
 
 using std::string;
@@ -557,6 +558,9 @@ void PGMImage::loadSVD(const char *file)
         cout << endl;
     }
     
+    for (int i=0; i<getSize(); ++i) {
+        values[i] = round(X[i]);
+    }
     
 //    for (int i=0; i<width*width; ++i) {
 //        cout << V[i] << ' ';

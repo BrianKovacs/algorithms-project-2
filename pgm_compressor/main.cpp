@@ -118,6 +118,7 @@ void option4(const char* file)
     
     PGMImage i;
     i.loadSVD(file);
+    i.saveASCII(newFile.c_str());
 }
 
 void exportMatrix(const char* file)
