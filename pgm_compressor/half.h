@@ -25,47 +25,14 @@ short floatToHalf(float num)
     exp = full32 >> 23;
     unsigned int i = exp;
     
-    if (i == 0) {
-        half16 = (full32 >> 13); // only shift shift
-        half16 = (half16 & 32767); // mask 0111111111111111
-        half16 = (half16 & 32767) | ((full32 >> 16) & 32768); // shift and mask 1000000000000000
-    } else if (i < 112) {
-//        std::cout << "NO\n";
-        
-        unsigned int int1;
-        memcpy(&int1, &num, sizeof(float));
-        bitset<32> b1{int1};
-        cout << b1 << endl;
-        
-        
-        half16 = (full32 >> 13) & 33791; // subtract offset and shift
-        half16 = (half16 & 32767); // mask 0111111111111111
-        half16 = (half16 & 32767) | ((full32 >> 16) & 32768); // shift and mask 1000000000000000
-    } else {
-//        std::cout << "HELLO\n";
-        half16 = ((full32 - (112<<23)) >> 13); // subtract offset and shift
-        half16 = (half16 & 32767); // mask 0111111111111111
-        half16 = (half16 & 32767) | ((full32 >> 16) & 32768); // shift and mask 1000000000000000
-    }
-    
-//    half16 = ((full32 - (112<<23)) >> 13); // subtract offset and shift
-//    half16 = (half16 & 32767); // mask 0111111111111111
-//    half16 = (half16 & 32767) | ((full32 >> 16) & 32768); // shift and mask 1000000000000000
-    
-
-
     if (i < 112) {
-//        half16 = ((full32 << 9 ) >> 22); // subtract offset and shift
-//        half16 = (half16 & 32767); // mask 0111111111111111
-//        half16 |= ((full32 >> 16) & 32768); // shift and mask 1000000000000000
-//        std::cout << "BAD" << std::endl;
-//        half16 = 0;
-//        half16 = half16 & 33791;
+        half16 = (full32 >> 13) & 33791; // only shift
     } else {
-//        half16 = ((full32 - (112<<23)) >> 13); // subtract offset and shift
-//        half16 = (half16 & 32767); // mask 0111111111111111
-//        half16 |= ((full32 >> 16) & 32768); // shift and mask 1000000000000000
+        half16 = ((full32 - (112<<23)) >> 13); // subtract offset and shift
     }
+    
+    half16 = (half16 & 32767); // mask 0111111111111111
+    half16 = (half16 & 32767) | ((full32 >> 16) & 32768); // shift and mask 1000000000000000
     
     return half16;
 }
