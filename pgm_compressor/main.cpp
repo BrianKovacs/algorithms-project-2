@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include "PGMImage.h"
+#include "half.h"
 
 using namespace std;
 
@@ -19,6 +20,47 @@ void exportMatrix(const char* file);
 
 int main(int argc, const char * argv[])
 {
+//    unsigned int int1;
+//    float myF = 0;
+//    memcpy(&int1, &myF, sizeof(float));
+//    bitset<32> b1{int1};
+//    cout << b1 << endl;
+//
+//    float a, b;
+//    half h;
+//
+//    a = 0.5;
+//    h = floatToHalf(a);
+//    b = halfToFloat(h);
+//    cout << a << endl << b << endl << endl;
+//
+//    a = 0.00005;
+//    h = floatToHalf(a);
+//    b = halfToFloat(h);
+//    cout << a << endl << b << endl << endl;
+//
+//    a = 0.000005;
+//    h = floatToHalf(a);
+//    b = halfToFloat(h);
+//    cout << a << endl << b << endl << endl;
+//
+//    a = -0.00005;
+//    h = floatToHalf(a);
+//    b = halfToFloat(h);
+//    cout << a << endl << b << endl << endl;
+//
+//    a = -0.000005;
+//    h = floatToHalf(a);
+//    b = halfToFloat(h);
+//    cout << a << endl << b << endl << endl;
+    
+    
+    
+//    return 0;
+    
+    
+    
+    
     if (argc >= 3 && strncmp (argv[1], "1", 2) == 0) {
         cout << "Option 1...\n";
         option1(argv[2]);
@@ -91,20 +133,20 @@ void option3(const char* header, const char* svd, int rank)
     string newFile;
     string str(header);
     size_t found = str.find("_header.txt");
-    std::cout << "found: " << found << endl;
+//    std::cout << "found: " << found << endl;
     if (found != string::npos) {
         newFile = str.substr(0,found) + "_b.pgm.SVD";
     } else {
         newFile = "image_b.pgm.SVD";
     }
-    cout << newFile << endl;
+//    cout << newFile << endl;
     
     PGMImage::saveSVD(header, svd, newFile, rank);
 }
 
 void option4(const char* file)
 {
-    cout << file << endl;
+//    cout << file << endl;
     string newFile;
     string str(file);
     size_t found = str.find("_b.pgm.SVD");
@@ -114,7 +156,7 @@ void option4(const char* file)
         cout << "Error: The file name sould end with \"_b.pgm.SVD\"\n";
         return;
     }
-    cout << newFile << endl;
+//    cout << newFile << endl;
     
     PGMImage i;
     int rank = i.loadSVD(file);
