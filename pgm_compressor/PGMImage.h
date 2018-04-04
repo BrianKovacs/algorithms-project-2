@@ -66,24 +66,24 @@ bool PGMImage::loadASCII(const char* file)
         
         if (line[0] == '#') {
             // eat all the comment lines
-            cout << line << endl;
+//            cout << line << endl;
             continue;
         }
         
         if (n == 0) {
             // Magic Number
-            cout << "Magic Number " << line << endl;
+//            cout << "Magic Number " << line << endl;
             
         } else if (n == 1) {
             // Width and Height
-            cout << "Width and Height " << line << endl;
+//            cout << "Width and Height " << line << endl;
             iss >> width >> height;
             size = width*height;
             values = new int[size];
             
         } else if (n == 2) {
             // Max Value
-            cout << "Max Value " << line << endl;
+//            cout << "Max Value " << line << endl;
             iss >> max;
             
         } else {
@@ -98,7 +98,7 @@ bool PGMImage::loadASCII(const char* file)
         
         ++n;
     }
-    cout << endl;
+//    cout << endl;
     
     return true;
 }

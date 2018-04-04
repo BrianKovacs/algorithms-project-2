@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include "PGMImage.h"
 #include "half.h"
 
@@ -17,50 +18,10 @@ void option2(const char* file);
 void option3(const char* header, const char* svd, int rank);
 void option4(const char* file);
 void exportMatrix(const char* file);
+void compare(const char* file1, const char* file2);
 
 int main(int argc, const char * argv[])
 {
-//    unsigned int int1;
-//    float myF = 0;
-//    memcpy(&int1, &myF, sizeof(float));
-//    bitset<32> b1{int1};
-//    cout << b1 << endl;
-//
-//    float a, b;
-//    half h;
-//
-//    a = 0.5;
-//    h = floatToHalf(a);
-//    b = halfToFloat(h);
-//    cout << a << endl << b << endl << endl;
-//
-//    a = 0.00005;
-//    h = floatToHalf(a);
-//    b = halfToFloat(h);
-//    cout << a << endl << b << endl << endl;
-//
-//    a = 0.000005;
-//    h = floatToHalf(a);
-//    b = halfToFloat(h);
-//    cout << a << endl << b << endl << endl;
-//
-//    a = -0.00005;
-//    h = floatToHalf(a);
-//    b = halfToFloat(h);
-//    cout << a << endl << b << endl << endl;
-//
-//    a = -0.000005;
-//    h = floatToHalf(a);
-//    b = halfToFloat(h);
-//    cout << a << endl << b << endl << endl;
-    
-    
-    
-//    return 0;
-    
-    
-    
-    
     if (argc >= 3 && strncmp (argv[1], "1", 2) == 0) {
         cout << "Option 1...\n";
         option1(argv[2]);
@@ -84,6 +45,10 @@ int main(int argc, const char * argv[])
         cout << "Export matrix...\n";
         exportMatrix(argv[2]);
     }
+    else if (argc >= 4 && strncmp (argv[1], "6", 2) == 0) {
+        cout << "Export matrix...\n";
+        compare(argv[2], argv[3]);
+    }
     else {
         cout << "Invalid arguments\n";
     }
@@ -93,7 +58,7 @@ int main(int argc, const char * argv[])
 
 void option1(const char* file)
 {
-    cout << file << endl;
+//    cout << file << endl;
     string newFile;
     string str(file);
     size_t found = str.find_last_of(".pgm");
@@ -102,11 +67,31 @@ void option1(const char* file)
     } else {
         newFile = str + "_b.pgm";
     }
-    cout << newFile << endl;
+//    cout << newFile << endl;
     
     PGMImage i;
     i.loadASCII(file);
     i.saveBinary(newFile.c_str());
+    
+    streampos begin,end;
+    
+    ifstream original (file, ios::binary);
+    begin = original.tellg();
+    original.seekg (0, ios::end);
+    end = original.tellg();
+    original.close();
+    streampos originalSize = end-begin;
+    
+    ifstream compressed (newFile, ios::binary);
+    begin = compressed.tellg();
+    compressed.seekg (0, ios::end);
+    end = compressed.tellg();
+    compressed.close();
+    streampos compressedSize = end-begin;
+    
+    cout << file << ": " << (originalSize) << " bytes.\n";
+    cout << newFile << ": " << (compressedSize) << " bytes.\n";
+    cout << "Compression rate: " << 100*((originalSize - compressedSize) / (1.0 * originalSize)) << "%.\n\n";
 }
 
 void option2(const char* file)
@@ -130,11 +115,13 @@ void option2(const char* file)
 
 void option3(const char* header, const char* svd, int rank)
 {
+    string oldFile = "";
     string newFile;
     string str(header);
     size_t found = str.find("_header.txt");
 //    std::cout << "found: " << found << endl;
     if (found != string::npos) {
+        oldFile = str.substr(0,found) + ".pgm";
         newFile = str.substr(0,found) + "_b.pgm.SVD";
     } else {
         newFile = "image_b.pgm.SVD";
@@ -142,6 +129,29 @@ void option3(const char* header, const char* svd, int rank)
 //    cout << newFile << endl;
     
     PGMImage::saveSVD(header, svd, newFile, rank);
+    
+    
+    if (oldFile != "") {
+        streampos begin,end;
+        
+        ifstream original (oldFile, ios::binary);
+        begin = original.tellg();
+        original.seekg (0, ios::end);
+        end = original.tellg();
+        original.close();
+        streampos originalSize = end-begin;
+        
+        ifstream compressed (newFile, ios::binary);
+        begin = compressed.tellg();
+        compressed.seekg (0, ios::end);
+        end = compressed.tellg();
+        compressed.close();
+        streampos compressedSize = end-begin;
+        
+        cout << oldFile << ": " << (originalSize) << " bytes.\n";
+        cout << newFile << ": " << (compressedSize) << " bytes.\n";
+        cout << "Compression rate: " << 100*((originalSize - compressedSize) / (1.0 * originalSize)) << "%.\n\n";
+    }
 }
 
 void option4(const char* file)
@@ -184,4 +194,11 @@ void exportMatrix(const char* file)
     PGMImage i;
     i.loadASCII(file);
     i.exportMatrix(newFile);
+}
+
+void compare(const char* file1, const char* file2)
+{
+    PGMImage a, b;
+    a.loadASCII(file1);
+    b.loadASCII(file2);
 }
