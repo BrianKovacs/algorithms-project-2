@@ -7,7 +7,6 @@
 //
 
 #include <iostream>
-#include <bitset>
 #include "PGMImage.h"
 
 using namespace std;
@@ -18,37 +17,8 @@ void option3(const char* header, const char* svd, int rank);
 void option4(const char* file);
 void exportMatrix(const char* file);
 
-short floatToShort(float num)
-{
-    int     full;
-    short   half;
-    memcpy( &full, &num, sizeof( float ) );
-    
-    half = ((full - 939524096) >> 13); // subtract offset and shift
-    half = (half & 32767); // mask 0111111111111111
-    half |= ((full >> 16) & 32768); // shift and mask 1000000000000000
-    
-    return half;
-}
-float shortToFloat(short half)
-{
-    int full = ((half & 32768) << 16) | // mask sign and shift 16
-    (((half & 32767) << 13) + 939524096) ; // mask exponent and fraction, shift, and add offset.
-    
-    float num;
-    memcpy(&num, &full, sizeof(float));
-    return num;
-}
-
 int main(int argc, const char * argv[])
 {
-    float a = -31415.926535914159265359141592653591415926535914159265359;
-    short sA = floatToShort(a);
-    float b = shortToFloat(sA);
-    cout << a << endl << b << endl;
-    
-    return 0;
-    
     if (argc >= 3 && strncmp (argv[1], "1", 2) == 0) {
         cout << "Option 1...\n";
         option1(argv[2]);

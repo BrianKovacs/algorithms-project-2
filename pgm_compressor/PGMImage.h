@@ -16,7 +16,7 @@
 #include <cstdio>
 #include <algorithm>
 #include <math.h>
-#include "half.hpp"
+#include "half.h"
 
 using std::string;
 using std::ifstream;
@@ -24,7 +24,6 @@ using std::ofstream;
 using std::getline;
 using std::cout;
 using std::endl;
-using namespace half_float;
 
 const int BUFFERSIZE = 4096;
 
@@ -256,7 +255,7 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         int count = 0;
         while (count < h && getline(svd, line)) {
             std::istringstream iss(line);
-            half v;
+            float v;
             while (iss >> v) {
                 cout << v << ' ';
             }
@@ -270,7 +269,7 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         count = 0;
         while (count < h && getline(svd, line)) {
             std::istringstream iss(line);
-            half v;
+            float v;
             int t=0;
             while (t<h && iss >> v) {
                 cout << v << ' ';
@@ -306,11 +305,11 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         int row = 0;
         while (row < h && getline(svd, line)) {
             std::istringstream iss(line);
-            half v;
+            float v;
             int col = 0;
             while (col < w && iss >> v) {
                 cout << v << ' ';
-                U[row*w + col] = v;
+                U[row*w + col] = floatToHalf(v);
                 ++col;
             }
             cout << endl;
@@ -323,11 +322,11 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         row = 0;
         while (row < w && getline(svd, line)) {
             std::istringstream iss(line);
-            half v;
+            float v;
             int col = 0;
             while (col < w && iss >> v) {
                 cout << v << ' ';
-                S[row*w + col] = v;
+                S[row*w + col] = floatToHalf(v);
                 ++col;
             }
             cout << endl;
@@ -340,11 +339,11 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         row = 0;
         while (row < w && getline(svd, line)) {
             std::istringstream iss(line);
-            half v;
+            float v;
             int col = 0;
             while (col < w && iss >> v) {
                 cout << v << ' ';
-                V[row*w + col] = v;
+                V[row*w + col] = floatToHalf(v);
                 ++col;
             }
             cout << endl;
@@ -462,17 +461,17 @@ int PGMImage::loadSVD(const char *file)
     
     for (int i=0; i<k; ++i) {
         for (int j=0; j<height; ++j) {
-            U[j*width+i] = uBuffer[i*height+j];
+            U[j*width+i] = halfToFloat(uBuffer[i*height+j]);
         }
     }
     
     for (int i=0; i<k; ++i) {
-        S[i*width+i] = sBuffer[i];
+        S[i*width+i] = halfToFloat(sBuffer[i]);
     }
     
     for (int i=0; i<k; ++i) {
         for (int j=0; j<width; ++j) {
-            V[i*width+j] = vBuffer[i*width+j];
+            V[i*width+j] = halfToFloat(vBuffer[i*width+j]);
         }
     }
 
@@ -617,6 +616,7 @@ void PGMImage::exportMatrix(const string fileName)
     ofstream aFile;
     aFile.open(fileName+"_matlab.m");
     
+    aFile << "function generateSVD()" << endl;;
     aFile << "A = [";
     
     for (int i=0; i<height; ++i) {
@@ -626,11 +626,11 @@ void PGMImage::exportMatrix(const string fileName)
         aFile << ';';
     }
     
-    aFile << ']' << endl;;
-    aFile << "[U,S,V] = svd(A,'econ')" << endl;
-    aFile << "W = transpose(V)" << endl;
-    aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii')" << endl;
-    
+    aFile << "];" << endl;;
+    aFile << "[U,S,V] = svd(A,'econ');" << endl;
+    aFile << "W = transpose(V);" << endl;
+    aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii');" << endl;
+    aFile << "end" << endl;
     aFile.close();
 }
 

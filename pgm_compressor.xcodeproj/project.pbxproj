@@ -23,7 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D35790D220706FC500EFDE20 /* half.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = half.hpp; sourceTree = "<group>"; };
+		D35790D220706FC500EFDE20 /* half.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = half.h; sourceTree = "<group>"; };
 		D384FA10207001660012E606 /* pgm_compressor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pgm_compressor; sourceTree = BUILT_PRODUCTS_DIR; };
 		D384FA13207001660012E606 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D384FA1A207002160012E606 /* PGMImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PGMImage.h; sourceTree = "<group>"; };
@@ -59,7 +59,7 @@
 		D384FA12207001660012E606 /* pgm_compressor */ = {
 			isa = PBXGroup;
 			children = (
-				D35790D220706FC500EFDE20 /* half.hpp */,
+				D35790D220706FC500EFDE20 /* half.h */,
 				D384FA13207001660012E606 /* main.cpp */,
 				D384FA1A207002160012E606 /* PGMImage.h */,
 			);
