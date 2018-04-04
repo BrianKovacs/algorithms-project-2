@@ -18,7 +18,7 @@ void option2(const char* file);
 void option3(const char* header, const char* svd, int rank);
 void option4(const char* file);
 void exportMatrix(const char* file);
-void compare(const char* file1, const char* file2);
+void calculateFNorm(const char* file1, const char* file2);
 
 int main(int argc, const char * argv[])
 {
@@ -46,8 +46,7 @@ int main(int argc, const char * argv[])
         exportMatrix(argv[2]);
     }
     else if (argc >= 4 && strncmp (argv[1], "6", 2) == 0) {
-        cout << "Export matrix...\n";
-        compare(argv[2], argv[3]);
+        calculateFNorm(argv[2], argv[3]);
     }
     else {
         cout << "Invalid arguments\n";
@@ -196,9 +195,12 @@ void exportMatrix(const char* file)
     i.exportMatrix(newFile);
 }
 
-void compare(const char* file1, const char* file2)
+void calculateFNorm(const char* file1, const char* file2)
 {
     PGMImage a, b;
     a.loadASCII(file1);
     b.loadASCII(file2);
+    
+    double norm = a.fNorm(b);
+    cout << "FNorm: ||" << file1 << " - " << file2 << "|| = " << norm << endl;
 }

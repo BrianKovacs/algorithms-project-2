@@ -45,6 +45,7 @@ public:
     static void saveSVD(const string headerName, const string svdName, const string outFileName, int rank);
     int loadSVD(const char* file);
     void exportMatrix(const string file);
+    double fNorm(PGMImage other);
 };
 
 bool PGMImage::loadASCII(const char* file)
@@ -628,6 +629,23 @@ void PGMImage::exportMatrix(const string fileName)
     aFile.close();
 }
 
+double PGMImage::fNorm(PGMImage other)
+{
+    for (int i = 0; i < getSize(); ++i) {
+        values[i] -= other.values[i];
+    }
+    
+    for (int i = 0; i < getSize(); ++i) {
+        values[i] *= values[i];
+    }
+    
+    double total = 0;
+    for (int i = 0; i < getSize(); ++i) {
+        total += values[i];
+    }
+    
+    return sqrt(total);
+}
 
 
 
