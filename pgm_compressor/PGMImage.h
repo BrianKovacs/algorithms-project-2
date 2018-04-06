@@ -176,24 +176,12 @@ bool PGMImage::loadBinary(const char *file)
 
 bool PGMImage::saveBinary(const char *file)
 {
-//    FILE * pFile;
-//    char buffer[] = { 65 , 66 , 67 };
-//    pFile = fopen ("myfile.bin", "wb");
-//    fwrite (buffer , sizeof(char), sizeof(buffer), pFile);
-//    fclose (pFile);
-//    return 0;
-    
     FILE * binFile = fopen (file, "wb");
     
     unsigned short dimensions[2];
     dimensions[0] = width;
     dimensions[1] = height;
     fwrite(dimensions, sizeof(short), 2, binFile);
-    
-//    char w1 = width%256;
-//    char w2 = (width-w1)/256;
-//    char h1 = height%256;
-//    char h2 = (height-w1)/256;
     char maxV = static_cast<char>(max);
     fwrite (&maxV , sizeof(char), 1, binFile);
     
