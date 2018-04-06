@@ -225,20 +225,19 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
     std::istringstream iss(line);
     iss >> w >> h >> m;
     
-    // Write header info to binary file
-    char w1 = w%256;
-    char w2 = (w-w1)/256;
-    char h1 = h%256;
-    char h2 = (h-w1)/256;
-    char bufferHeader[5] = {w1, w2, h1, h2 , static_cast<char>(m)};
-    fwrite (bufferHeader , sizeof(char), sizeof(bufferHeader), binFile);
+    unsigned short dimensions[2];
+    dimensions[0] = w;
+    dimensions[1] = h;
+    fwrite(dimensions, sizeof(short), 2, binFile);
+    char maxV = static_cast<char>(m);
+    fwrite (&maxV , sizeof(char), 1, binFile);
     
     // Get the U, S, and V matrices
     half *U, *S, *V;
     
     if (w > h) {
-        cout << "ERROR HERE!!!";
-        return;
+//        cout << "ERROR HERE!!!";
+//        return;
         U = new half[h*h];
         S = new half[h*h];
         V = new half[w*h];
@@ -246,48 +245,96 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         // print the U matrix
         cout << "U Matrix:\n";
         string line;
-        int count = 0;
-        while (count < h && getline(svd, line)) {
+        int row = 0;
+        while (row < h && getline(svd, line)) {
             std::istringstream iss(line);
             float v;
-            while (iss >> v) {
-                cout << v << ' ';
+            int col = 0;
+            while (col < h && iss >> v) {
+                cout << '[' << row*h + col << ']' << v << ' ';
+                U[row*h + col] = floatToHalf(v);
+                ++col;
             }
             cout << endl;
-            ++count;
+            ++row;
         }
         cout << endl;
         
+//        std::cout << endl;
+//        for (int a=0; a<h*h; ++a) {
+//            cout << halfToFloat(U[a]) << ' ';
+//        }
+//        std::cout << endl;
+        
         // print the S matrix
         cout << "S Matrix:\n";
-        count = 0;
-        while (count < h && getline(svd, line)) {
+        row = 0;
+        while (row < h && getline(svd, line)) {
             std::istringstream iss(line);
             float v;
-            int t=0;
-            while (t<h && iss >> v) {
+            int col = 0;
+            while (col < h && iss >> v) {
                 cout << v << ' ';
-                ++t;
+                S[row*h + col] = floatToHalf(v);
+                ++col;
             }
             cout << endl;
-            ++count;
+            ++row;
         }
         cout << endl;
         
         // print the V' matrix
         cout << "V' Matrix:\n";
-        count = 0;
-        while (count < h && getline(svd, line)) {
+        row = 0;
+        while (row < h && getline(svd, line)) {
             std::istringstream iss(line);
-            half v;
-            while (iss >> v) {
+            float v;
+            int col = 0;
+            while (col < w && iss >> v) {
                 cout << v << ' ';
+                V[row*w + col] = floatToHalf(v);
+                ++col;
             }
             cout << endl;
-            ++count;
+            ++row;
         }
         cout << endl;
-        return;
+        
+        // Make sure K is less than or equal to maximum rank
+        int k = std::min(rank,h);
+        
+        // Write the rank to the binary file
+        char bufferRank[1] = {static_cast<char>(k)};
+        fwrite (bufferRank , sizeof(char), sizeof(bufferRank), binFile);
+        
+        cout << "K is " << k << endl;
+        //        return;
+        
+        cout << "// write " << k << " column(s) of U" << endl;
+        for (int j=0; j<k; ++j) {
+            for (int i=0; i<h; ++i) {
+                cout << halfToFloat(U[i*h+j]) << endl;
+                fwrite(&U[i*h+j], sizeof(half), 1, binFile);
+            }
+            cout << "----\n";
+        }
+        
+        cout << "// write " << k << " value(s) of S" << endl;
+        for (int i=0; i<k; ++i) {
+            cout << halfToFloat(S[i*h+i]) << " | ";
+            fwrite(&S[i*h+i], sizeof(half), 1, binFile);
+        }
+        cout << endl;
+        
+        cout << "// write " << k << " row(s) of V'" << endl;
+        for (int j=0; j<k; ++j) {
+            for (int i=0; i<w; ++i) {
+                cout << halfToFloat(V[j*w+i]) << ' ';
+                fwrite(&V[j*w+i], sizeof(half), 1, binFile);
+            }
+            cout << endl;
+        }
+        cout << endl;
     } else {
         U = new half[h*w];
         S = new half[w*w];
@@ -596,10 +643,7 @@ int PGMImage::loadSVD(const char *file)
 
 void PGMImage::exportMatrix(const string fileName)
 {
-    ofstream headerFile;
-    headerFile.open(fileName+"_header.txt");
-    headerFile << width << ' ' << height << ' ' << max << endl;
-    headerFile.close();
+    
     
     ofstream aFile;
     aFile.open(fileName+"_matlab.m");
@@ -614,10 +658,41 @@ void PGMImage::exportMatrix(const string fileName)
         aFile << ';';
     }
     
+    /*
     aFile << "];" << endl;;
     aFile << "[U,S,V] = svd(A,'econ');" << endl;
     aFile << "W = transpose(V);" << endl;
-    aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii');" << endl;
+    if (width > height) {
+        aFile << "save('" << fileName << "_SVD.txt','W','S','U','-ascii');" << endl;
+    } else {
+        aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii');" << endl;
+    }
+     */
+    
+    
+    if (false) {
+        ofstream headerFile;
+        headerFile.open(fileName+"_header.txt");
+        headerFile << width << ' ' << height << ' ' << max << endl;
+        headerFile.close();
+        
+        aFile << "];" << endl;;
+        aFile << "[U,S,V] = svd(A,'econ');" << endl;
+        aFile << "W = transpose(V);" << endl;
+        aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii');" << endl;
+    } else {
+        ofstream headerFile;
+        headerFile.open(fileName+"_header.txt");
+        headerFile << width << ' ' << height << ' ' << max << endl;
+        headerFile.close();
+        
+        aFile << "];" << endl;;
+        aFile << "[U,S,V] = svd(A,'econ');" << endl;
+        aFile << "W = transpose(V);" << endl;
+        aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii');" << endl;
+    }
+    
+    
     aFile << "end" << endl;
     aFile.close();
 }

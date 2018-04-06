@@ -19,6 +19,8 @@ void option3(const char* header, const char* svd, int rank);
 void option4(const char* file);
 void exportMatrix(const char* file);
 void calculateFNorm(const char* file1, const char* file2);
+void rotate(const char* file);
+void chop(const char* file);
 
 int main(int argc, const char * argv[])
 {
@@ -47,6 +49,14 @@ int main(int argc, const char * argv[])
     }
     else if (argc >= 4 && strncmp (argv[1], "6", 2) == 0) {
         calculateFNorm(argv[2], argv[3]);
+    }
+    else if (argc >= 3 && strncmp (argv[1], "7", 2) == 0) {
+        cout << "Rotate matrix...\n";
+        rotate(argv[2]);
+    }
+    else if (argc >= 3 && strncmp (argv[1], "8", 2) == 0) {
+        cout << "Chop matrix...\n";
+        chop(argv[2]);
     }
     else {
         cout << "Invalid arguments\n";
@@ -204,3 +214,66 @@ void calculateFNorm(const char* file1, const char* file2)
     double norm = a.fNorm(b);
     cout << "FNorm: ||" << file1 << " - " << file2 << "|| = " << norm << endl;
 }
+
+void rotate(const char* file)
+{
+    string newFile;
+    string str(file);
+    size_t found = str.find_last_of(".pgm");
+    if (found != string::npos) {
+        newFile = str.substr(0,found-3) + "_rotate.pgm";
+    } else {
+        newFile = str + "_rotate.pgm";
+    }
+    //    cout << newFile << endl;
+    
+    PGMImage img;
+    img.loadASCII(file);
+    PGMImage r;
+    r.width = img.height;
+    r.height = img.width;
+    r.max = img.max;
+    r.values = new int[img.getSize()];
+    
+    int n = 0;
+    for (int i=0; i<img.width; ++i) {
+        for (int j=0; j<img.height; ++j) {
+            r.values[n] = img.values[i+j*img.width];
+            ++n;
+        }
+    }
+    
+    r.saveASCII(newFile.c_str());
+}
+
+void chop(const char* file)
+{
+    string newFile;
+    string str(file);
+    size_t found = str.find_last_of(".pgm");
+    if (found != string::npos) {
+        newFile = str.substr(0,found-3) + "_chop.pgm";
+    } else {
+        newFile = str + "_chop.pgm";
+    }
+    
+    PGMImage img;
+    img.loadASCII(file);
+    PGMImage chop;
+    chop.width = img.width / 2;
+    chop.height = img.height;
+    chop.max = img.max;
+    chop.values = new int[chop.getSize()];
+    
+    int n = 0;
+    for (int i=0; i<chop.height; ++i) {
+        for (int j=0; j<chop.width; ++j) {
+            chop.values[chop.width*i + j] = img.values[img.width*i + j];
+            ++n;
+        }
+    }
+    
+    chop.saveASCII(newFile.c_str());
+}
+
+
