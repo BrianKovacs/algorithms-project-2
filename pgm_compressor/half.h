@@ -40,7 +40,7 @@ short floatToHalf(float num)
 float halfToFloat(short half16)
 {
     if (!half16) {
-        std::cout << "HEYYYYYY\n";
+//        std::cout << "HEYYYYYY\n";
         return 0;
     }
     int full32 = ((half16 & 32768) << 16) | // mask sign and shift 16

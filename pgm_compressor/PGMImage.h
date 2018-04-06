@@ -243,7 +243,7 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         V = new half[w*h];
         
         // print the U matrix
-        cout << "U Matrix:\n";
+//        cout << "U Matrix:\n";
         string line;
         int row = 0;
         while (row < h && getline(svd, line)) {
@@ -251,14 +251,14 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
             float v;
             int col = 0;
             while (col < h && iss >> v) {
-                cout << '[' << row*h + col << ']' << v << ' ';
+//                cout << '[' << row*h + col << ']' << v << ' ';
                 U[row*h + col] = floatToHalf(v);
                 ++col;
             }
-            cout << endl;
+//            cout << endl;
             ++row;
         }
-        cout << endl;
+//        cout << endl;
         
 //        std::cout << endl;
 //        for (int a=0; a<h*h; ++a) {
@@ -267,38 +267,38 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
 //        std::cout << endl;
         
         // print the S matrix
-        cout << "S Matrix:\n";
+//        cout << "S Matrix:\n";
         row = 0;
         while (row < h && getline(svd, line)) {
             std::istringstream iss(line);
             float v;
             int col = 0;
             while (col < h && iss >> v) {
-                cout << v << ' ';
+//                cout << v << ' ';
                 S[row*h + col] = floatToHalf(v);
                 ++col;
             }
-            cout << endl;
+//            cout << endl;
             ++row;
         }
-        cout << endl;
+//        cout << endl;
         
         // print the V' matrix
-        cout << "V' Matrix:\n";
+//        cout << "V' Matrix:\n";
         row = 0;
         while (row < h && getline(svd, line)) {
             std::istringstream iss(line);
             float v;
             int col = 0;
             while (col < w && iss >> v) {
-                cout << v << ' ';
+//                cout << v << ' ';
                 V[row*w + col] = floatToHalf(v);
                 ++col;
             }
-            cout << endl;
+//            cout << endl;
             ++row;
         }
-        cout << endl;
+//        cout << endl;
         
         // Make sure K is less than or equal to maximum rank
         int k = std::min(rank,h);
@@ -307,34 +307,33 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         char bufferRank[1] = {static_cast<char>(k)};
         fwrite (bufferRank , sizeof(char), sizeof(bufferRank), binFile);
         
-        cout << "K is " << k << endl;
-        //        return;
+//        cout << "K is " << k << endl;
         
-        cout << "// write " << k << " column(s) of U" << endl;
+//        cout << "// write " << k << " column(s) of U" << endl;
         for (int j=0; j<k; ++j) {
             for (int i=0; i<h; ++i) {
-                cout << halfToFloat(U[i*h+j]) << endl;
+//                cout << halfToFloat(U[i*h+j]) << endl;
                 fwrite(&U[i*h+j], sizeof(half), 1, binFile);
             }
-            cout << "----\n";
+//            cout << "----\n";
         }
         
-        cout << "// write " << k << " value(s) of S" << endl;
+//        cout << "// write " << k << " value(s) of S" << endl;
         for (int i=0; i<k; ++i) {
-            cout << halfToFloat(S[i*h+i]) << " | ";
+//            cout << halfToFloat(S[i*h+i]) << " | ";
             fwrite(&S[i*h+i], sizeof(half), 1, binFile);
         }
-        cout << endl;
+//        cout << endl;
         
-        cout << "// write " << k << " row(s) of V'" << endl;
+//        cout << "// write " << k << " row(s) of V'" << endl;
         for (int j=0; j<k; ++j) {
             for (int i=0; i<w; ++i) {
-                cout << halfToFloat(V[j*w+i]) << ' ';
+//                cout << halfToFloat(V[j*w+i]) << ' ';
                 fwrite(&V[j*w+i], sizeof(half), 1, binFile);
             }
-            cout << endl;
+//            cout << endl;
         }
-        cout << endl;
+//        cout << endl;
     } else {
         U = new half[h*w];
         S = new half[w*w];
