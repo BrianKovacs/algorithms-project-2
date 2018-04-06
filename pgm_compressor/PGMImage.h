@@ -139,7 +139,7 @@ bool PGMImage::loadBinary(const char *file)
 
     for (size_t bytesRead = fread(buffer, sizeof(char), BUFFERSIZE, binFile); bytesRead > 0; bytesRead = fread(buffer, sizeof(char), BUFFERSIZE, binFile)) {
 
-        cout << "Bytes read: " << bytesRead << endl;
+//        cout << "Bytes read: " << bytesRead << endl;
         for (int i=0; i < bytesRead; ++i) {
 //            cout << static_cast<int>(buffer[i]) << "  ";
             
@@ -185,12 +185,17 @@ bool PGMImage::saveBinary(const char *file)
     
     FILE * binFile = fopen (file, "wb");
     
-    char w1 = width%256;
-    char w2 = (width-w1)/256;
-    char h1 = height%256;
-    char h2 = (height-w1)/256;
-    char bufferHeader[5] = {w1, w2, h1, h2 , static_cast<char>(max)};
-    fwrite (bufferHeader , sizeof(char), sizeof(bufferHeader), binFile);
+    unsigned short dimensions[2];
+    dimensions[0] = width;
+    dimensions[1] = height;
+    fwrite(dimensions, sizeof(short), 2, binFile);
+    
+//    char w1 = width%256;
+//    char w2 = (width-w1)/256;
+//    char h1 = height%256;
+//    char h2 = (height-w1)/256;
+    char maxV = static_cast<char>(max);
+    fwrite (&maxV , sizeof(char), 1, binFile);
     
     char bufferValues[getSize()];
     for (int i=0; i < getSize(); ++i) {
