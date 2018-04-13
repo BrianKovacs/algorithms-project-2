@@ -302,6 +302,7 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         
         // Make sure K is less than or equal to maximum rank
         int k = std::min(rank,h);
+        k = std::min(k,255);
         
         // Write the rank to the binary file
         char bufferRank[1] = {static_cast<char>(k)};
@@ -393,6 +394,7 @@ void PGMImage::saveSVD(const string headerName, const string svdName, const stri
         
         // Make sure K is less than or equal to maximum rank
         int k = std::min(rank,w);
+        k = std::min(k,255);
         
         // Write the rank to the binary file
         char bufferRank[1] = {static_cast<char>(k)};
@@ -595,45 +597,6 @@ int PGMImage::loadSVD(const char *file)
         values[i] = round(X[i]);
     }
     
-//    for (int i=0; i<width*width; ++i) {
-//        cout << V[i] << ' ';
-//    }
-//    cout << endl;
-    
-    
-    /*
-    int headerBufferSize = 5;
-    unsigned char * headerBuffer = new unsigned char[headerBufferSize];
-    int n = 0;
-    
-    for (size_t bytesRead = fread(headerBuffer, sizeof(char), headerBufferSize, binFile); bytesRead > 0; bytesRead = fread(headerBuffer, sizeof(char), headerBufferSize, binFile)) {
-        
-        cout << "Bytes read: " << bytesRead << endl;
-        for (int i=0; i < bytesRead; ++i) {
-            //            cout << static_cast<int>(buffer[i]) << "  ";
-            
-            if (n == 0) {
-                // lower half of width
-                width = static_cast<int>(headerBuffer[i]);
-            } else if (n == 1) {
-                // upper half of width
-                width += 256*static_cast<int>(headerBuffer[i]);
-            } else if (n == 2) {
-                // lower half of height
-                height = static_cast<int>(headerBuffer[i]);
-            } else if (n == 3) {
-                // upper half of height
-                height += 256*static_cast<int>(headerBuffer[i]);
-                values = new int[getSize()];
-            } else if (n == 4) {
-                // max value
-                max = static_cast<int>(headerBuffer[i]);
-            }
-            ++n;
-        }
-    }
-    cout << endl;
-     */
     
     // Done and close.
     fclose(binFile);
@@ -656,18 +619,6 @@ void PGMImage::exportMatrix(const string fileName)
         }
         aFile << ';';
     }
-    
-    /*
-    aFile << "];" << endl;;
-    aFile << "[U,S,V] = svd(A,'econ');" << endl;
-    aFile << "W = transpose(V);" << endl;
-    if (width > height) {
-        aFile << "save('" << fileName << "_SVD.txt','W','S','U','-ascii');" << endl;
-    } else {
-        aFile << "save('" << fileName << "_SVD.txt','U','S','W','-ascii');" << endl;
-    }
-     */
-    
     
     if (false) {
         ofstream headerFile;
@@ -714,11 +665,4 @@ double PGMImage::fNorm(PGMImage other)
     return sqrt(total);
 }
 
-
-
-
 #endif /* PGMImage_h */
-
-
-
-

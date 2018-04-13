@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/Brian/Documents/GitHub/algorithms-project-2/pgm_compressor/PGMImage.h
+sstream
+-
+string
+-
+iostream
+-
+fstream
+-
+cstdio
+-
+algorithm
+-
+math.h
+-
+half.h
+/Users/Brian/Documents/GitHub/algorithms-project-2/pgm_compressor/half.h
+
+/Users/Brian/Documents/GitHub/algorithms-project-2/pgm_compressor/half.h
+iostream
+-
+bitset
+-
+
+/Users/Brian/Documents/GitHub/algorithms-project-2/pgm_compressor/main.cpp
+iostream
+-
+fstream
+-
+PGMImage.h
+/Users/Brian/Documents/GitHub/algorithms-project-2/pgm_compressor/PGMImage.h
+half.h
+/Users/Brian/Documents/GitHub/algorithms-project-2/pgm_compressor/half.h
+
